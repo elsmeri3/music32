@@ -84,6 +84,7 @@ client.on('message', async msg => {
                     var videos = await youtube.searchVideos(searchString, 5);
                     let index = 0;
                     const embed1 = new Discord.RichEmbed()
+                                .setThumbnail('https://e.top4top.net/p_1001lsv3w1.png')
                     .setDescription(`**Please Type The Song Number** :
 ${videos.map(video2 => `[**${++index} **] \`${video2.title}\``).join('\n')}`)
  
