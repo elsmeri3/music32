@@ -52,18 +52,18 @@ client.on('message', async msg => {
  
     if (command === `play`) {
         const voiceChannel = msg.member.voiceChannel;
-        if (!voiceChannel) return msg.channel.send('يجب توآجد حضرتك بروم صوتي .');
+        if (!voiceChannel) return msg.channel.send('You Are Not Connected In Voicechannel :x:');
         const permissions = voiceChannel.permissionsFor(msg.client.user);
         if (!permissions.has('CONNECT')) {
            
-            return msg.channel.send('لا يتوآجد لدي صلاحية للتكلم بهذآ الروم');
+            return msg.channel.send('I Dont Have Permission To Connect In This Voicechannel :x:');
         }
         if (!permissions.has('SPEAK')) {
-            return msg.channel.send('لا يتوآجد لدي صلاحية للتكلم بهذآ الروم');
+            return msg.channel.send('I Dont Have Permission `SPEAK` In This Voicechannel :x:');
         }
  
         if (!permissions.has('EMBED_LINKS')) {
-            return msg.channel.sendMessage("**يجب توآفر برمشن `EMBED LINKS`لدي **")
+            return msg.channel.sendMessage("**I Dont Have Permission `EMBED_LINKS` :x:**")
         }
  
         if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
@@ -74,7 +74,7 @@ client.on('message', async msg => {
                 const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
                 await handleVideo(video2, msg, voiceChannel, true); // eslint-disable-line no-await-in-loop
             }
-            return msg.channel.send(` **${playlist.title}** تم الإضآفة إلى قأئمة التشغيل`);
+            return msg.channel.send(` **${playlist.title}** Added To Queue`);
         } else {
             try {
  
@@ -84,10 +84,10 @@ client.on('message', async msg => {
                     var videos = await youtube.searchVideos(searchString, 5);
                     let index = 0;
                     const embed1 = new Discord.RichEmbed()
-                    .setDescription(`**الرجآء من حضرتك إختيآر رقم المقطع** :
+                    .setDescription(`**Please Type The Song Number** :
 ${videos.map(video2 => `[**${++index} **] \`${video2.title}\``).join('\n')}`)
  
-                    .setFooter("By iiFireKingYTii_#7310")
+                    .setFooter("RaZe BoT")
                     msg.channel.sendEmbed(embed1).then(message =>{message.delete(20000)})
                    
                     // eslint-disable-next-line max-depth
@@ -99,66 +99,60 @@ ${videos.map(video2 => `[**${++index} **] \`${video2.title}\``).join('\n')}`)
                         });
                     } catch (err) {
                         console.error(err);
-                        return msg.channel.send('لم يتم إختيآر مقطع صوتي');
+                        return msg.channel.send('No Number Song Typed :x:');
                     }
                     const videoIndex = parseInt(response.first().content);
                     var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
                 } catch (err) {
                     console.error(err);
-                    return msg.channel.send(':X: لا يتوفر نتآئج بحث ');
+                    return msg.channel.send('I Cant Find This Song :x:');
                 }
             }
  
             return handleVideo(video, msg, voiceChannel);
         }
     } else if (command === `skip`) {
-        if (!msg.member.voiceChannel) return msg.channel.send('أنت لست بروم صوتي .');
-        if (!serverQueue) return msg.channel.send('لا يتوفر مقطع لتجآوزه');
-        serverQueue.connection.dispatcher.end('تم تجآوز هذآ المقطع');
-        return undefined;
-    } else if (command === `leave`) {
-        if (!msg.member.voiceChannel) return msg.channel.send('أنت لست بروم صوتي .');
-        if (!serverQueue) return msg.channel.send('لا يتوفر مقطع لإيقآفه');
-        serverQueue.songs = [];
-        serverQueue.connection.dispatcher.end('تم إيقآف هذآ المقطع');
+        if (!msg.member.voiceChannel) return msg.channel.send('You Are Not Connected To VoiceChannel :x:');
+        if (!serverQueue) return msg.channel.send('No Song Are Played :x:');
+        serverQueue.connection.dispatcher.end('Done The Song Has Been Skipped');
         return undefined;
     } else if (command === `vol`) {
-        if (!msg.member.voiceChannel) return msg.channel.send('أنت لست بروم صوتي .');
-        if (!serverQueue) return msg.channel.send('لا يوجد شيء شغآل.');
-        if (!args[1]) return msg.channel.send(`:loud_sound: مستوى الصوت **${serverQueue.volume}**`);
+        if (!msg.member.voiceChannel) return msg.channel.send('You Are Not In Voice Channel :x:');
+        if (!serverQueue) return msg.channel.send('No Music Are Played :x:');
+        if (!args[1]) return msg.channel.send(`:loud_sound: The Song Volume: **${serverQueue.volume}**`);
         serverQueue.volume = args[1];
         serverQueue.connection.dispatcher.setVolumeLogarithmic(args[1] / 50);
-        return msg.channel.send(`:speaker: تم تغير الصوت الي **${args[1]}**`);
+        return msg.channel.send(`:speaker: The Voice Volume Changed To **${args[1]}**`);
     } else if (command === `np`) {
-        if (!serverQueue) return msg.channel.send('لا يوجد شيء حالي ف العمل.');
+        if (!serverQueue) return msg.channel.send('No Song Are Played :x:');
         const embedNP = new Discord.RichEmbed()
-    .setDescription(`:notes: الان يتم تشغيل : **${serverQueue.songs[0].title}**`)
+    .setDescription(`:notes: Now Playing : **${serverQueue.songs[0].title}**`)
         return msg.channel.sendEmbed(embedNP);
     } else if (command === `queue`) {
        
-        if (!serverQueue) return msg.channel.send('لا يوجد شيء حالي ف العمل.');
+        if (!serverQueue) return msg.channel.send('No Song Are Played :X:');
         let index = 0;
        
         const embedqu = new Discord.RichEmbed()
  
 .setDescription(`**Songs Queue**
 ${serverQueue.songs.map(song => `**${++index} -** ${song.title}`).join('\n')}
-**الان يتم تشغيل** ${serverQueue.songs[0].title}`)
+**Now Starting :** ${serverQueue.songs[0].title}`)
         return msg.channel.sendEmbed(embedqu);
     } else if (command === `stop`) {
         if (serverQueue && serverQueue.playing) {
             serverQueue.playing = false;
             serverQueue.connection.dispatcher.pause();
-            return msg.channel.send('تم إيقاف الموسيقى مؤقتا!');
+            return msg.channel.send('The Song Has Been Stopped');
         }
-        return msg.channel.send('لا يوجد شيء حالي ف العمل.');
+        return msg.channel.send('No Song Are Played :X:');
     } else if (command === "resume") {
         if (serverQueue && !serverQueue.playing) {
             serverQueue.playing = true;
             serverQueue.connection.dispatcher.resume();
-            return msg.channel.send('استأنفت الموسيقى بالنسبة لك !');
+            return msg.channel.send('The Music Resumed');
         }
-        return msg.channel.send('لا يوجد شيء حالي في العمل.');
+        return msg.channel.send('The Song Played :X:');
     }
  
     return undefined;
@@ -194,13 +188,13 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
         } catch (error) {
             console.error(`I could not join the voice channel: ${error}`);
             queue.delete(msg.guild.id);
-            return msg.channel.send(`لا أستطيع دخول هذآ الروم ${error}`);
+            return msg.channel.send(`I Cant Connect To This Voicechannel ${error} :X:`);
         }
     } else {
         serverQueue.songs.push(song);
         console.log(serverQueue.songs);
         if (playlist) return undefined;
-        else return msg.channel.send(` **${song.title}** تم اضافه الاغنية الي القائمة!`);
+        else return msg.channel.send(` **${song.title}** Done The Song Has Been Added To The Queue`);
     }
     return undefined;
 }
@@ -225,11 +219,11 @@ function play(guild, song) {
         .on('error', error => console.error(error));
     dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
  
-    serverQueue.textChannel.send(`بدء تشغيل : **${song.title}**`);
+    serverQueue.textChannel.send(`Starting The Song : **${song.title}**`);
 }
  
-const adminprefix = "$vip";
-const devs = ['274923685985386496'];
+const adminprefix = "->vip";
+const devs = ['429972030092476437'];
 client.on('message', message => {
   var argresult = message.content.split(` `).slice(1).join(' ');
     if (!devs.includes(message.author.id)) return;
@@ -258,21 +252,50 @@ client.on("message", message => {
   const embed = new Discord.RichEmbed()
       .setColor("#000000")
       .setDescription(`
-${prefix}play ⇏ لتشغيل أغنية برآبط أو بأسم
-${prefix}skip ⇏ لتجآوز الأغنية الحآلية
-${prefix}stop ⇏ إيقآف الأغنية مؤقتا
-${prefix}resume ⇏ لموآصلة الإغنية بعد إيقآفهآ مؤقتا
-${prefix}vol ⇏ لتغيير درجة الصوت 100 - 0
-${prefix}leave⇏ لإخرآج البوت من الروم
-${prefix}np ⇏ لمعرفة الأغنية المشغلة حآليا
-${prefix}queue ⇏ لمعرفة قآئمة التشغيل
+${prefix}play ⇏ To Play A Song From Youtube
+${prefix}skip ⇏ To Skip The Song And Play The Next Song
+${prefix}stop ⇏ To Pause The Song
+${prefix}resume ⇏ To Resume The Song
+${prefix}vol ⇏ To Change The Volume Song
+${prefix}leave⇏ To Disconnect The Bot From Your Voicechannel
+${prefix}np ⇏ To View The Song Played
+${prefix}queue ⇏ To View The Songs Queue
+${prefix}invite ⇏ To Invite The Bot In Your Server
  `)
-   message.channel.sendEmbed(embed)
+   message.author.sendEmbed(embed)
+      message.channel.send(`:white_check_mark: I've DMed you with my help list`)
    
    }
    });
+       client.on('message', message =>{
+  if(message.content.startsWith(`${prefix}leave`)){
+    const voiceChannel = message.member.voiceChannel
+    if(message.client.voiceChannel) return message.channel.send('The Bot Not Connected To VoiceChannel :x:')
+    voiceChannel.disconnect();
+    message.channel.send(":mailbox_closed: Disconnected")
+}})
  
- 
- 
+ client.on('message', message =>{
+  if(message.content === `${prefix}ping`){
+let start = Date.now(); message.channel.send('pong').then(message => { 
+message.edit(`\`\`\`js
+Time taken: ${Date.now() - start} ms
+Discord API: ${client.ping.toFixed(0)} ms\`\`\``);
+  });
+  }
+});
+
+client.on('message', message => {
+  if(message.content.startsWith(`${prefix}invite`)){
+    var embed = new Discord.RichEmbed()
+    .setTitle(">> ClickHere To Add" + `${client.user.username}` + " <<")
+    .setURL("https://discordapp.com/oauth2/authorize?client_id=" + `${client.user.id}` + "&scope=bot&permissions=2080374975")
+    .setTimestamp()
+    .setFooter(`Requested By | ${message.author.username}`)
+    .setColor("RANDOM")
+    message.channel.send(`:white_check_mark: I've DMed you with my invite link`)
+    message.author.send({embed})
+  }
+});
  
 client.login(process.env.BOT_TOKEN);
