@@ -271,7 +271,7 @@ ${prefix}invite ⇏ To Invite The Bot In Your Server
        client.on('message', message =>{
   if(message.content.startsWith(`${prefix}leave`)){
     const voiceChannel = message.member.voiceChannel
-    voiceChannel.disconnect();
+    voiceChannel.leave();
     message.channel.send(":mailbox_closed: Disconnected")
 }})
  
