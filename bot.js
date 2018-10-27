@@ -1,9 +1,9 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
- 
+const prefix = "->" 
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
-   client.user.setActivity("اكتب اي شي",{type: 'WATCHING'})
   console.log('')
   console.log('')
   console.log('╔[═════════════════════════════════════════════════════════════════]╗')
@@ -37,7 +37,6 @@ const queue = new Map();
  
  
  
-var prefix = "البرفكس" 
 client.on('message', async msg => {
     if (msg.author.bot) return undefined;
    
