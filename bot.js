@@ -271,7 +271,6 @@ ${prefix}invite ⇏ To Invite The Bot In Your Server
        client.on('message', message =>{
   if(message.content.startsWith(`${prefix}leave`)){
     const voiceChannel = message.member.voiceChannel
-    if(message.client.voiceChannel) return message.channel.send('The Bot Not Connected To VoiceChannel :x:')
     voiceChannel.disconnect();
     message.channel.send(":mailbox_closed: Disconnected")
 }})
