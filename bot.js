@@ -173,7 +173,7 @@ async function handleVideo(video, msg, voiceChannel, playlist = false) {
         const queueConstruct = {
             textChannel: msg.channel,
             voiceChannel: voiceChannel,
-            connection: null,
+            connection: true,
             songs: [],
             volume: 5,
             playing: true
